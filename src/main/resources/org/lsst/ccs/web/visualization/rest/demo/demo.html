@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test client for visualization</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    </head>
+    <body onload="startPoll()">
+        <h1>Visualization client example</h1>
+        <pre id="log"></pre>
+        <script>
+            var since = 0;
+            function startPoll() {
+                $('#log').append("start")
+                doPoll();
+            }
+            function doPoll() {
+                var params = {since: since};
+                $.getJSON("http://localhost:8080/vis/checkImage",params,
+                function(data){
+                    if (data) {
+                        $('#log').append("<br>"+JSON.stringify(data));
+                        since = data.timestamp;
+                    } else{
+                        $('#log').append("<br>No new data");
+                    }
+                });
+                setTimeout(doPoll,1000);
+            }
+        </script>
+    </body>
+</html>
