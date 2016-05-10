@@ -57,5 +57,6 @@ public class Main {
         provider.start(Duration.ofSeconds(10));
         System.in.read();
         server.stop(0);
+        provider.stop();
     }
 }
