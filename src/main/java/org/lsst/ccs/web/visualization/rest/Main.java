@@ -55,9 +55,10 @@ public class Main {
 		{
 			PORT = args[0];
 			BASE_URI = "http://localhost:" + PORT + "/vis/";
-			System.out.println("PORT: " + PORT);
-			System.out.println("BASE_URI: " + BASE_URI);
 		}
+
+		System.out.println("PORT: " + PORT);
+		System.out.println("BASE_URI: " + BASE_URI);
 
         ImageQueue imageQueue = new ImageQueue();
         final HttpServer server = startServer(imageQueue);
