@@ -18,7 +18,8 @@ import org.lsst.ccs.web.visualization.rest.demo.Demo;
 public class Main {
 
     // Base URI the HTTP server will listen on
-    public static final String BASE_URI = "http://localhost:8080/vis/";
+	private static String PORT = "8080";
+    public static String BASE_URI = "http://localhost:" + PORT + "/vis/";
 
     /**
      * Starts HTTP server exposing JAX-RS resources defined in this application.
@@ -49,6 +50,16 @@ public class Main {
      * @throws java.net.URISyntaxException
      */
     public static void main(String[] args) throws IOException, URISyntaxException {
+		
+		if (args.length == 1)
+		{
+			PORT = args[0];
+			BASE_URI = "http://localhost:" + PORT + "/vis/";
+		}
+
+		System.out.println("PORT: " + PORT);
+		System.out.println("BASE_URI: " + BASE_URI);
+
         ImageQueue imageQueue = new ImageQueue();
         final HttpServer server = startServer(imageQueue);
         System.out.println(String.format("Jersey app started with WADL available at "
