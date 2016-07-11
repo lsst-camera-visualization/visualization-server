@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +29,19 @@ class FitsFileManager extends TimerTask {
     private BlockingMap<String, ManagedFile> handlers = new BlockingMap<>();
     private static final Logger logger = Logger.getLogger(FitsFileManager.class.getName());
     private static Timer timer = new Timer("Idle Timeout", true);
+    /**
+     * Time since start message that an idle connection is considered to have timed out.
+     */
+    private Duration startTimeout = Duration.ofSeconds(60);
+    /**
+     * Time since last message that an idle connection is considered to have timed out.
+     */
+    private Duration activeTimeout = Duration.ofSeconds(10);
+    
+    /**
+     * The time we will wait for a start message after some other message has been received.
+     */
+    private Duration startWait = Duration.ofSeconds(1);
     /**
      * Create a fits file manager. This instance is shared by all incoming
      * connections.
@@ -66,8 +80,8 @@ class FitsFileManager extends TimerTask {
             return file;
         } else {
             try {
-                // We wait up to 1 second, in case the start message is delayed
-                return handlers.get(imageName, 1, TimeUnit.SECONDS);
+                // We wait for startWait, in case the start message is delayed
+                return handlers.get(imageName, startWait.toMillis(), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 return null;
             }
@@ -138,10 +152,32 @@ class FitsFileManager extends TimerTask {
         }
         return super.cancel();
     }
-    
-    
 
-    private static class ManagedFile {
+    Duration getStartTimeout() {
+        return startTimeout;
+    }
+
+    void setStartTimeout(Duration startTimeout) {
+        this.startTimeout = startTimeout;
+    }
+
+    Duration getActiveTimeout() {
+        return activeTimeout;
+    }
+
+    void setActiveTimeout(Duration activeTimeout) {
+        this.activeTimeout = activeTimeout;
+    }
+
+    Duration getStartWait() {
+        return startWait;
+    }
+
+    void setStartWait(Duration startWait) {
+        this.startWait = startWait;
+    }
+
+    private class ManagedFile {
 
         private final String imageName;
         private final FitsFileHandler fitsFileHandler;
@@ -156,7 +192,8 @@ class FitsFileManager extends TimerTask {
         }
 
         private boolean isIdle(long now) {
-            return now - lastActive.get() > 1000; 
+            return (now - lastActive.get()) > activeTimeout.toMillis() &&
+                   (now - startTime) > startTimeout.toMillis();
         }
 
 

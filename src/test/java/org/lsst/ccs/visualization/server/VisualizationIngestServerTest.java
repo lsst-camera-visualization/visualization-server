@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +30,6 @@ public class VisualizationIngestServerTest {
     private VisualizationIngestServer server;
     private TestFitsFileHandler currentHandler = new TestFitsFileHandler();
 
-    public VisualizationIngestServerTest() {
-    }
-
     @Before
     public void setup() throws IOException {
         FitsFileManager ffManager = new FitsFileManager(new File("/notused")) {
@@ -43,6 +41,8 @@ public class VisualizationIngestServerTest {
         };
         InetSocketAddress inputAddress = new InetSocketAddress(InetAddress.getLoopbackAddress(), 0);
         server = new VisualizationIngestServer(inputAddress, ffManager);
+        server.setActiveTimeout(Duration.ofSeconds(1));
+        server.setStartTimeout(Duration.ofSeconds(1));
         address = server.start();
         Thread t = new Thread(server);
         t.start();

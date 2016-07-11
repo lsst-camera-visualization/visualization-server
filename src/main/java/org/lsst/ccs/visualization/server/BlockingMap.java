@@ -40,7 +40,7 @@ class BlockingMap<K, V> {
         }
     }
 
-    V get(K key, int timeout, TimeUnit unit) throws InterruptedException {
+    V get(K key, long timeout, TimeUnit unit) throws InterruptedException {
         Latch<V> latch = map.get(key);
         if (latch == null) {
             lock.lock();
@@ -100,7 +100,7 @@ class BlockingMap<K, V> {
             count.countDown();
         }
 
-        V get(int timeout, TimeUnit unit) throws InterruptedException {
+        V get(long timeout, TimeUnit unit) throws InterruptedException {
             count.await(timeout, unit);
             return value;
         }

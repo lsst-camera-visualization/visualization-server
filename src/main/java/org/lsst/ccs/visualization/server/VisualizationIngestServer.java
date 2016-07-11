@@ -7,6 +7,7 @@ import java.net.SocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -52,7 +53,7 @@ public class VisualizationIngestServer implements Runnable {
     @Override
     public void run() {
         try {
-            if (!server.isOpen()) start();
+            if (server == null || !server.isOpen()) start();
             for (;;) {
                 SocketChannel accept = server.accept();
                 LOGGER.log(Level.INFO, "Accepted incoming connection from {0}", accept.getRemoteAddress());
@@ -89,5 +90,43 @@ public class VisualizationIngestServer implements Runnable {
         }
         ffManager.cancel();
         server.close();
+    }
+
+    public Duration getStartTimeout() {
+        return ffManager.getStartTimeout();
+    }
+
+    /**
+     * The time since a StartMessage after which an idle connection may be 
+     * considered to have timed out.
+     * @param startTimeout 
+     */
+    public void setStartTimeout(Duration startTimeout) {
+        ffManager.setStartTimeout(startTimeout);
+    }
+    public Duration getActiveTimeout() {
+        return ffManager.getActiveTimeout();
+    }
+
+    /**
+     * The time since the last message after which a connection may be considered
+     * to have timed out.
+     * @param activeTimeout 
+     */
+    public void setActiveTimeout(Duration activeTimeout) {
+        ffManager.setActiveTimeout(activeTimeout);
+    }
+
+    public Duration getStartWait() {
+        return ffManager.getStartWait();
+    }
+
+    /**
+     * The time we will wait for a start message after a message of any other type
+     * is received,
+     * @param startWait 
+     */
+    public void setStartWait(Duration startWait) {
+        ffManager.setStartWait(startWait);
     }
 }
