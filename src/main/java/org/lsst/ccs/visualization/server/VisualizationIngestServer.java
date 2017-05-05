@@ -25,7 +25,7 @@ public class VisualizationIngestServer implements Runnable {
     private final FitsFileManager ffManager;
     private static final Logger LOGGER = Logger.getLogger(VisualizationIngestServer.class.getName());
     private ServerSocketChannel server;
-    private Set<MessageHandler> weakMessageSet = Collections.newSetFromMap(new WeakHashMap<MessageHandler,Boolean>());
+    private final Set<MessageHandler> weakMessageSet = Collections.newSetFromMap(new WeakHashMap<MessageHandler,Boolean>());
 
     /**
      * Create the ingest server

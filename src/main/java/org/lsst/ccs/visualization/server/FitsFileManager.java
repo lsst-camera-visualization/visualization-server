@@ -26,9 +26,9 @@ import org.lsst.ccs.visualization.client.StartMessage;
 class FitsFileManager extends TimerTask {
 
     private final File dir;
-    private BlockingMap<String, ManagedFile> handlers = new BlockingMap<>();
+    private final BlockingMap<String, ManagedFile> handlers = new BlockingMap<>();
     private static final Logger logger = Logger.getLogger(FitsFileManager.class.getName());
-    private static Timer timer = new Timer("Idle Timeout", true);
+    private static final Timer timer = new Timer("Idle Timeout", true);
     /**
      * Time since start message that an idle connection is considered to have timed out.
      */
