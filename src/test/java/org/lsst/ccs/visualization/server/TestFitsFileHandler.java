@@ -1,5 +1,6 @@
 package org.lsst.ccs.visualization.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
@@ -24,8 +25,8 @@ class TestFitsFileHandler implements FitsFileHandler {
     private final AtomicInteger nCloses = new AtomicInteger();
     private final AtomicInteger nHeadersReceived = new AtomicInteger();
     private final AtomicLong nBytesReceived = new AtomicLong();
-    private CountDownLatch openLatch = new CountDownLatch(1);
-    private CountDownLatch closedLatch = new CountDownLatch(1);
+    private final CountDownLatch openLatch = new CountDownLatch(1);
+    private final CountDownLatch closedLatch = new CountDownLatch(1);
     
     void init(StartMessage msg) {
         width = msg.getWidth();
@@ -84,6 +85,11 @@ class TestFitsFileHandler implements FitsFileHandler {
 
     public long getnBytesReceived() {
         return nBytesReceived.get();
+    }
+
+    @Override
+    public File getFile() {
+        return null;
     }
     
 }

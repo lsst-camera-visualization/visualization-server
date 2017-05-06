@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,19 +31,24 @@ class FitsFileManager extends TimerTask {
     private final BlockingMap<String, ManagedFile> handlers = new BlockingMap<>();
     private static final Logger logger = Logger.getLogger(FitsFileManager.class.getName());
     private static final Timer timer = new Timer("Idle Timeout", true);
+    private final List<ImageListener> imageListeners = new CopyOnWriteArrayList<>();
     /**
-     * Time since start message that an idle connection is considered to have timed out.
+     * Time since start message that an idle connection is considered to have
+     * timed out.
      */
     private Duration startTimeout = Duration.ofSeconds(60);
     /**
-     * Time since last message that an idle connection is considered to have timed out.
+     * Time since last message that an idle connection is considered to have
+     * timed out.
      */
     private Duration activeTimeout = Duration.ofSeconds(10);
-    
+
     /**
-     * The time we will wait for a start message after some other message has been received.
+     * The time we will wait for a start message after some other message has
+     * been received.
      */
     private Duration startWait = Duration.ofSeconds(1);
+
     /**
      * Create a fits file manager. This instance is shared by all incoming
      * connections.
@@ -65,6 +72,7 @@ class FitsFileManager extends TimerTask {
                 if (nClients == 0) {
                     handlers.remove(msg.getImageName());
                     handler.fitsFileHandler.close();
+                    notifyFileAvailable(msg.getImageName(), handler.getFile(), handler.getMillis());
                 }
             }
         }
@@ -147,7 +155,7 @@ class FitsFileManager extends TimerTask {
             try {
                 entry.getValue().fitsFileHandler.close();
             } catch (IOException ex) {
-                logger.log(Level.WARNING, "Error while closing file during cancel",ex);
+                logger.log(Level.WARNING, "Error while closing file during cancel", ex);
             }
         }
         return super.cancel();
@@ -177,6 +185,21 @@ class FitsFileManager extends TimerTask {
         this.startWait = startWait;
     }
 
+    // Can be overriden for handling completed files
+    void notifyFileAvailable(String imageName, File file, long millis) {
+        for (ImageListener l : imageListeners) {
+            l.imageReceived(imageName, millis, file);
+        }
+    }
+
+    void addImageListener(ImageListener l) {
+        imageListeners.add(l);
+    }
+
+    void removeImageListener(ImageListener l) {
+        imageListeners.add(l);
+    }
+
     private class ManagedFile {
 
         private final String imageName;
@@ -192,10 +215,19 @@ class FitsFileManager extends TimerTask {
         }
 
         private boolean isIdle(long now) {
-            return (now - lastActive.get()) > activeTimeout.toMillis() &&
-                   (now - startTime) > startTimeout.toMillis();
+            return (now - lastActive.get()) > activeTimeout.toMillis()
+                    && (now - startTime) > startTimeout.toMillis();
         }
 
+        File getFile() {
+            return fitsFileHandler.getFile();
+        }
+
+        long getMillis() {
+            // TODO: Would be better to return the actual image time stamp, but that 
+            // requires that the server sends it to us in the start message.
+            return startTime;
+        }
 
     }
 }

@@ -102,4 +102,9 @@ class FitsFileHandlerImpl implements FitsFileHandler {
             throw new IOException("Fits error during IO", fx);
         }
     }
+
+    @Override
+    public File getFile() {
+        return file;
+    }
 }

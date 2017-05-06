@@ -129,4 +129,13 @@ public class VisualizationIngestServer implements Runnable {
     public void setStartWait(Duration startWait) {
         ffManager.setStartWait(startWait);
     }
+
+    public void addImageListener(ImageListener l) {
+        ffManager.addImageListener(l);
+    }
+
+    public void removeImageListener(ImageListener l) {
+        ffManager.removeImageListener(l);
+    }
+    
 }

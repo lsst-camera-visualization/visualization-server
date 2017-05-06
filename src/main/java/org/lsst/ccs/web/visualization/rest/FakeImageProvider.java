@@ -1,5 +1,6 @@
 package org.lsst.ccs.web.visualization.rest;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author tonyj
  */
-public class FakeImageProvider {
+public class FakeImageProvider implements Closeable {
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final static Logger logger = Logger.getLogger(FakeImageProvider.class.getName());
@@ -41,7 +42,9 @@ public class FakeImageProvider {
         };
         scheduler.scheduleAtFixedRate(deliverImage, duration.toMillis(), duration.toMillis(), TimeUnit.MILLISECONDS);
     }
-    public void stop() {
+
+    @Override
+    public void close() {
         scheduler.shutdownNow();
     }
 }
