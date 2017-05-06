@@ -84,7 +84,12 @@ class FitsFileHandlerImpl implements FitsFileHandler {
 
             case HEADER:
                 HeaderMessage hdr = (HeaderMessage) msg;
-                header.addLine(HeaderCard.create(hdr.getCard()));
+                // FIXME: We do not want to have to synchronize here
+                // Would be better to have reserved space for each channel and keep the items
+                // ordered by channel
+                synchronized (header) {
+                    header.addLine(HeaderCard.create(hdr.getCard()));
+                }
                 break;
         }
     }

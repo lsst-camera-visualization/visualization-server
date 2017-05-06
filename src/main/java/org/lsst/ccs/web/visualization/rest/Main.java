@@ -33,8 +33,6 @@ public class Main {
         ImageQueue imageQueue = new ImageQueue();
         try (RestServer restServer = new RestServer()) {
             restServer.start(imageQueue, baseURI);
-            System.out.println(String.format("Jersey app started with WADL available at "
-                    + "%sapplication.wadl\nHit enter to stop it...", baseURI));
             try (FakeImageProvider provider = new FakeImageProvider(imageQueue)) {
                 provider.start(Duration.ofSeconds(10));
                 System.in.read();

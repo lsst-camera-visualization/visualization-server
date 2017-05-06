@@ -84,7 +84,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.lsst.ccs.visualization.server.Main</mainClass>
+                            <mainClass>org.lsst.ccs.visualization.main.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

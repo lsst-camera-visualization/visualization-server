@@ -12,7 +12,9 @@ import org.kohsuke.args4j.OptionHandlerRegistry;
 import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
+import org.lsst.ccs.visualization.server.ImageListener;
 import org.lsst.ccs.visualization.server.VisualizationIngestServer;
+import org.lsst.ccs.web.visualization.rest.Image;
 import org.lsst.ccs.web.visualization.rest.ImageQueue;
 import org.lsst.ccs.web.visualization.rest.RestServer;
 
@@ -74,6 +76,9 @@ public class Main {
         server.setStartWait(startWait);
         server.setActiveTimeout(activeTimeout);
         server.setStartTimeout(startTimeout);
+        server.addImageListener((String name, long timeStamp, File file) -> {
+            imageQueue.put(new Image(file.toURI(), name, timeStamp));
+        });
         server.run();
     }
 
