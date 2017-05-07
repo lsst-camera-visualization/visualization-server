@@ -12,7 +12,7 @@ import org.kohsuke.args4j.OptionHandlerRegistry;
 import org.kohsuke.args4j.spi.OptionHandler;
 import org.kohsuke.args4j.spi.Parameters;
 import org.kohsuke.args4j.spi.Setter;
-import org.lsst.ccs.visualization.server.ImageListener;
+import org.lsst.ccs.visualization.server.CacheManager;
 import org.lsst.ccs.visualization.server.VisualizationIngestServer;
 import org.lsst.ccs.web.visualization.rest.Image;
 import org.lsst.ccs.web.visualization.rest.ImageQueue;
@@ -37,7 +37,7 @@ public class Main {
 
     @Option(name = "-dir", usage = "The directory where received files will be stored. Recommended to be a ramdisk")
     @SuppressWarnings("FieldMayBeFinal")
-    private File dir = new File(".");
+    private File receiveDirectory = new File(".");
 
     @Option(name = "-startTimeout", usage = "The time after a start command that an idle connection will timeout")
     @SuppressWarnings("FieldMayBeFinal")
@@ -50,6 +50,10 @@ public class Main {
     @Option(name = "-startWait", usage = "The time we will wait for a start message after some other message has been received")
     @SuppressWarnings("FieldMayBeFinal")
     private Duration startWait = defaultServer.getStartWait();
+    
+    @Option(name = "-freeCacheSize", usage = "The minimum free space to maintain in the cache")
+    @SuppressWarnings("FieldMayBeFinal")
+    private long freeCacheTarget = 1024*1024*1024;
 
     public static void main(String[] args) throws IOException {
         OptionHandlerRegistry.getRegistry().registerHandler(Duration.class, DurationOptionHandler.class);
@@ -66,20 +70,26 @@ public class Main {
 
     private void run() throws IOException {
         
-        ImageQueue imageQueue = new ImageQueue();
+        try (CacheManager cacheManager = new CacheManager(receiveDirectory, freeCacheTarget)) {
+            
+            cacheManager.start(Duration.ofMinutes(1));
         
-        RestServer restServer = new RestServer();
-        URI baseURI = URI.create("http://localhost:" + restPort + "/vis/");
-        restServer.start(imageQueue, baseURI);
-        
-        VisualizationIngestServer server = new VisualizationIngestServer(ingestPort, dir);
-        server.setStartWait(startWait);
-        server.setActiveTimeout(activeTimeout);
-        server.setStartTimeout(startTimeout);
-        server.addImageListener((String name, long timeStamp, File file) -> {
-            imageQueue.put(new Image(file.toURI(), name, timeStamp));
-        });
-        server.run();
+            ImageQueue imageQueue = new ImageQueue();
+
+            RestServer restServer = new RestServer();
+            URI baseURI = URI.create("http://localhost:" + restPort + "/vis/");
+            restServer.start(imageQueue, baseURI);
+
+            VisualizationIngestServer server = new VisualizationIngestServer(ingestPort, receiveDirectory);
+            server.setStartWait(startWait);
+            server.setActiveTimeout(activeTimeout);
+            server.setStartTimeout(startTimeout);
+            server.addImageListener((String name, long timeStamp, File file) -> {
+                imageQueue.put(new Image(file.toURI(), name, timeStamp));
+                cacheManager.scanNow();
+            });
+            server.run();
+        }
     }
 
     public static class DurationOptionHandler extends OptionHandler<Duration> {
