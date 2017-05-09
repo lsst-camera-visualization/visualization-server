@@ -24,7 +24,7 @@
         <site>
             <id>lsst-maven2-site</id>
             <name>LSST Maven2 central site repository</name>
-            <url>dav:http://dev.lsstcorp.org:8081/nexus/content/sites/visualization-server/${project.version}</url>
+            <url>dav:http://dev.lsstcorp.org:8081/nexus/content/sites/ccs-site/visualization-server/${project.version}</url>
         </site>
     </distributionManagement>
 
