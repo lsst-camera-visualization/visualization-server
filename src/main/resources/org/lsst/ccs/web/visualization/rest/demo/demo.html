@@ -17,7 +17,7 @@
             }
             function doPoll() {
                 var params = {since: since};
-                $.getJSON("http://localhost:8888/vis/checkImage",params,
+                $.getJSON("checkImage",params,
                 function(data){
                     if (data) {
                         $('#log').append("<br>"+JSON.stringify(data));
