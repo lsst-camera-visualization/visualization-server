@@ -35,9 +35,10 @@ public class Main {
     @SuppressWarnings("FieldMayBeFinal")
     private int restPort = 8888;
 
-    @Option(name = "-dir", usage = "The directory where received files will be stored. Recommended to be a ramdisk")
+    @Option(name = "-dir", usage = "The directory where received files will be stored. Recommended to be a ramdisk. "
+            + "WARNING system will manage this directory and its descendants and may delete files without notice.", required=true)
     @SuppressWarnings("FieldMayBeFinal")
-    private File receiveDirectory = new File(".");
+    private File receiveDirectory;
 
     @Option(name = "-startTimeout", usage = "The time after a start command that an idle connection will timeout")
     @SuppressWarnings("FieldMayBeFinal")
