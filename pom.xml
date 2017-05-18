@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.lsst</groupId>
-    <artifactId>VisualizationServer</artifactId>
+    <artifactId>org-lsst-visualization-server</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>org-lsst-ccs-visualization-server</name>
+    <name>org-lsst-visualization-server</name>
 
 
     <distributionManagement>
