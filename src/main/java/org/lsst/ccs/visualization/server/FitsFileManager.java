@@ -41,12 +41,14 @@ class FitsFileManager extends TimerTask {
      * Time since last message that an idle connection is considered to have
      * timed out.
      */
+    //FIXME: Not yet implemented
     private Duration activeTimeout = Duration.ofSeconds(10);
 
     /**
      * The time we will wait for a start message after some other message has
      * been received.
      */
+    //FIXME: Not yet implemented
     private Duration startWait = Duration.ofSeconds(1);
 
     /**

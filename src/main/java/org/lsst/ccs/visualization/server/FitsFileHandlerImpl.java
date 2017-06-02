@@ -32,7 +32,12 @@ class FitsFileHandlerImpl implements FitsFileHandler {
     private final Header header;
     private final long dataPointer;
     private final File file;
+    private final int nHeaders;
     private static final Logger logger = Logger.getLogger(FitsFileHandlerImpl.class.getName());
+
+    static {
+        FitsFactory.setUseHierarch(true);
+    }
 
     FitsFileHandlerImpl(File dir, StartMessage start) throws IOException {
         try {
@@ -46,11 +51,15 @@ class FitsFileHandlerImpl implements FitsFileHandler {
             primary.addValue(Standard.NAXIS, 2);
             header.write(bf);
             // Reserve space for extra headers
+            nHeaders = start.getnHeaders();
             long filePointer = bf.getFilePointer();
             int extraBlocks
-                    = (start.getnHeaders() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER
+                    = (nHeaders + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER
                     - (header.getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER;
             dataPointer = filePointer + extraBlocks * FitsFactory.FITS_BLOCK_SIZE;
+            logger.log(Level.INFO,String.format("nHeaders=%d extraBlocks=%d physicalCards=%d MAX_CARDS_PER_HEADER=%d",nHeaders,extraBlocks,header.getNumberOfPhysicalCards(),MAX_CARDS_PER_HEADER));
+            logger.log(Level.INFO,String.format("dataPointer=%d",dataPointer));
+
             // reserve space for data (necessary?)
             long imageSize = 4 * start.getWidth() * start.getHeight();
             bf.seek(dataPointer + imageSize);
@@ -100,7 +109,9 @@ class FitsFileHandlerImpl implements FitsFileHandler {
             bf.seek(0);
             // FIXME: We need to deal with case where we did not 
             // receive enough headers to fill the header block
+            logger.log(Level.INFO,String.format("Received %d/%d headers",header.getNumberOfCards(),nHeaders));
             header.write(bf);
+            logger.log(Level.INFO,String.format("File Pointer after writing headers %d", bf.getFilePointer()));            
             bf.close();
             logger.log(Level.INFO, "Closed {0}", file);
         } catch (FitsException fx) {
