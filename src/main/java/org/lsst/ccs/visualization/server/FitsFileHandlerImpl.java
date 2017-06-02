@@ -54,8 +54,8 @@ class FitsFileHandlerImpl implements FitsFileHandler {
             nHeaders = start.getnHeaders();
             long filePointer = bf.getFilePointer();
             int extraBlocks
-                    = (nHeaders + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER
-                    - (header.getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER;
+                    = (start.getnHeaders()+header.getNumberOfPhysicalCards() + (MAX_CARDS_PER_HEADER - 1)) / MAX_CARDS_PER_HEADER
+                    - 1; // The block we already allocated.
             dataPointer = filePointer + extraBlocks * FitsFactory.FITS_BLOCK_SIZE;
             logger.log(Level.INFO,String.format("nHeaders=%d extraBlocks=%d physicalCards=%d MAX_CARDS_PER_HEADER=%d",nHeaders,extraBlocks,header.getNumberOfPhysicalCards(),MAX_CARDS_PER_HEADER));
             logger.log(Level.INFO,String.format("dataPointer=%d",dataPointer));
