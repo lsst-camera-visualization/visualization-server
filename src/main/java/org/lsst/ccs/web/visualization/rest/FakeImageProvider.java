@@ -33,7 +33,7 @@ public class FakeImageProvider implements Closeable {
                 try {
                     Instant instance = Instant.now();
                     File file = File.createTempFile("empty", ".fits");
-                    Image latestImage = new Image(file.toURI(), instance.toString(), instance.toEpochMilli());
+                    Image latestImage = new Image(file.toPath().toUri(), instance.toString(), instance.toEpochMilli());
                     queue.put(latestImage);
                 } catch (IOException ex) {
                     logger.log(Level.WARNING, "Eror while fetching image", ex);
