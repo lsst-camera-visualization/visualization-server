@@ -9,6 +9,12 @@
     <version>1.0-SNAPSHOT</version>
     <name>org-lsst-visualization-server</name>
 
+    <scm>
+        <url>https://github.com/lsst-camera-visualization/visualization-server</url>
+        <connection>scm:git:git://github.com/lsst-camera-visualization/visualization-server.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/lsst-camera-visualization/visualization-server.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <repository>
@@ -95,7 +101,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <version>1.6.0</version>
                 <executions>
                     <execution>
                         <goals>
