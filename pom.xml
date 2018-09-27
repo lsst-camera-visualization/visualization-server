@@ -14,17 +14,17 @@
         <repository>
             <id>lsst-maven2</id>
             <name>LSST Maven 2 central repository</name>
-            <url>http://dev.lsstcorp.org:8081/nexus/content/repositories/ccs-maven2/</url>
+            <url>http://repo-nexus.lsst.org/nexus/content/repositories/ccs-maven2/</url>
         </repository>
         <snapshotRepository>
             <id>lsst-maven2-snapshots</id>
             <name>LSST Maven2 central SNAPSHOTS repository</name>
-            <url>http://dev.lsstcorp.org:8081/nexus/content/repositories/ccs-maven2-snapshots/</url>
+            <url>http://repo-nexus.lsst.org/nexus/content/repositories/ccs-maven2-snapshots/</url>
         </snapshotRepository>
         <site>
             <id>lsst-maven2-site</id>
             <name>LSST Maven2 central site repository</name>
-            <url>dav:http://dev.lsstcorp.org:8081/nexus/content/sites/ccs-site/visualization-server/${project.version}</url>
+            <url>dav:http://repo-nexus.lsst.org/nexus/content/sites/ccs-site/visualization-server/${project.version}</url>
         </site>
     </distributionManagement>
 
