@@ -9,7 +9,6 @@
     <version>1.0.1-SNAPSHOT</version>
     <name>VisualizationServer</name>
 
-
     <distributionManagement>
         <repository>
             <id>lsst-maven2</id>
